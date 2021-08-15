@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const authRoute = require('../routes/auth.route');
+const userRoute = require('../routes/users');
 
 // Port defined here
 const PORT = process.env.PORT || 80;
@@ -13,7 +14,7 @@ const PORT = process.env.PORT || 80;
 const { MONGODB_URL, NODE_ENV } = require('../config');
 
 // Data from errors.js
-const { API_ENDPOINT_NOT_FOUND_ERR, SERVER_ERR } = require("./errors");
+const { API_ENDPOINT_NOT_FOUND_ERR, SERVER_ERR } = require("../errors");
 
 
 // initializing express app
@@ -46,6 +47,7 @@ app.get("/", (req, res) => {
 
 // Setting up the all routes
 app.use('/api/auth', authRoute);
+app.use('/api/users', userRoute);
 
 
 // Page not found middleware

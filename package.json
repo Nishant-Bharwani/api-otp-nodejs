@@ -1,23 +1,29 @@
 {
-  "name": "api",
-  "version": "1.0.0",
-  "description": "",
-  "main": "config.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.13.7",
-    "validator": "^13.6.0"
-  },
-  "devDependencies": {
-    "morgan": "^1.10.0"
-  }
+    "name": "api",
+    "version": "1.0.0",
+    "description": "",
+    "main": "config.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node src/app.js",
+        "dev": "nodemon src/app.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "crypto": "^1.0.1",
+        "dotenv": "^10.0.0",
+        "express": "^4.17.1",
+        "jsonwebtoken": "^8.5.1",
+        "mongoose": "^5.13.7",
+        "nodemailer": "^6.6.3",
+        "otp-generator": "^2.0.1",
+        "validator": "^13.6.0"
+    },
+    "devDependencies": {
+        "morgan": "^1.10.0"
+    }
 }

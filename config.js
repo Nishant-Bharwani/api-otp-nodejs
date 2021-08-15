@@ -1,7 +1,7 @@
 exports.MONGODB_URL = process.env.MONGODB_URL;
 exports.NODE_ENV = process.env.NODE_ENV;
 
-exports.JWT_SECRET = process.env.JWT_SECRET;
+exports.JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 // exports.ORIGIN = process.env.ORIGIN;
 
 

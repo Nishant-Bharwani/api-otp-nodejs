@@ -4,4 +4,6 @@ exports.AUTH_HEADER_MISSING_ERR = "auth header is missing";
 exports.AUTH_TOKEN_MISSING_ERR = "auth token is missing";
 exports.JWT_DECODE_ERR = "incorrect token";
 exports.USER_NOT_FOUND_ERR = "User not found";
-exports.ACCESS_DENIED_ERR = "Access deny for normal user"
+exports.ACCESS_DENIED_ERR = "Access deny for normal user";
+exports.WRONG_CREDENTIALS_ERROR = "Wrong username or password";
+exports.WRONG_USER_DATA = "This Action was not possible.\nMay be you are trying to access some different account";

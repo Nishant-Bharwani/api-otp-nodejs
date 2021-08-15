@@ -1,17 +1,22 @@
 const User = require('../models/user.models');
+const bcrypt = require('bcryptjs');
+
 const {
     PHONE_NOT_FOUND_ERR,
-
     PHONE_ALREADY_EXISTS_ERR,
     USER_NOT_FOUND_ERR,
     INCORRECT_OTP_ERR,
     ACCESS_DENIED_ERR,
+    WRONG_CREDENTIALS_ERROR
 } = require("../errors");
 
 const { checkPassword, hashPassword } = require("../utils/password.util");
 const { createJwtToken } = require("../utils/token.util");
 
-const { generateOTP, fast2sms } = require("../utils/otp.util");
+const { generateOTP, verifyOTP } = require("../utils/otp.util");
+
+const sendEmail = require('../utils/mail.util');
+
 
 // ================================ Creating new User ============================================
 
@@ -29,6 +34,7 @@ exports.createNewUser = async(req, res, next) => {
             name,
             email,
             phone,
+            password: (await bcrypt.hash(password, 10)).toString(),
             role: phone === process.env.ADMIN_PHONE ? "ADMIN" : "USER"
         });
 
@@ -36,22 +42,22 @@ exports.createNewUser = async(req, res, next) => {
 
         res.status(200).json({
             type: "success",
-            message: "Account created OTP sended to mobile number",
+            message: "Account created OTP sended to your email ID",
             data: {
                 userId: user._id,
             },
         })
 
         // Generating OTP
-        const otp = generateOTP(6);
-        user.phoneOTP = otp;
+        const { otp, fullHash } = generateOTP(email);
+        user.phoneOTP = fullHash;
         await user.save();
-        await fast2sms({
-                message: `Your OTP is ${otp}`,
-                contactNumber: user.phone,
-            },
-            next
-        );
+        const otpMessage = `Hi ${name},\nYour OTP is ${otp}\nIt will expire in 5 minutes`;
+        sendEmail(email, otpMessage);
+
+
+        next();
+
 
     } catch (err) {
         next(err);
@@ -63,33 +69,36 @@ exports.createNewUser = async(req, res, next) => {
 
 exports.loginWithPhoneOtp = async(req, res, next) => {
     try {
-        const { phone } = req.body;
+        const { email, password } = req.body;
 
-        const user = await User.findOne({ phone });
+        const user = await User.findOne({ email });
 
         if (!user) {
             next({ status: 400, message: PHONE_NOT_FOUND_ERR });
             return;
         }
 
+        const isPassowrdCorrect = await bcrypt.compare(password, user.password);
+        if (!isPassowrdCorrect) {
+            next({ status: 400, message: PHONE_NOT_FOUND_ERR });
+            return;
+        }
+
         res.status(201).json({
             type: "success",
-            message: "OTP sended to your registered phone number",
+            message: "OTP sended to your registered email ID",
             data: {
                 userId: user._id,
             },
         });
 
-        const otp = generateOTP(6);
-        user.phoneOTP = otp;
+        const { otp, fullHash } = generateOTP(email);
+        user.phoneOTP = fullHash;
         user.isAccountVerified = true;
         await user.save();
-        await fast2sms({
-                message: `Your OTP is ${otp}`,
-                contactNumber: user.phone,
-            },
-            next
-        );
+        const otpMessage = `Hi ${name},\nYour OTP is ${otp}\nIt will expire in 5 minutes`;
+        sendEmail(email, otpMessage);
+        next();
     } catch (err) {
         next(err);
     }
@@ -107,12 +116,13 @@ exports.verifyPhoneOtp = async(req, res, next) => {
             return;
         }
 
-        if (user.phoneOTP !== otp) {
+        const isOTPCorrect = verifyOTP(user.email, user.phoneOTP, otp);
+        if (!isOTPCorrect) {
             next({ status: 400, message: INCORRECT_OTP_ERR });
             return;
         }
         const token = createJwtToken({ userId: user._id });
-
+        console.log(token);
         user.phoneOTP = "";
         await user.save();
 
