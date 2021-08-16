@@ -5,13 +5,13 @@ module.exports = async function(email_id, msg) {
         const transporter = await nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'nbtaylor1031@gmail.com',
+                user: process.env.EMAIL,
                 pass: process.env.EMAIL_PASSWORD
             }
         });
 
         let mailOptions = {
-            from: `nbtaylor1031@gmail.com`,
+            from: process.env.EMAIL,
             to: email_id,
             subject: 'Your OTP',
             text: msg

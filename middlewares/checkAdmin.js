@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
         return next({ status: 401, message: ACCESS_DENIED_ERR });
     }
 
-    if (currentUser.role === "admin") {
+    if (currentUser.role === "ADMIN") {
         return next();
     }
 
